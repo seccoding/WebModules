@@ -45,13 +45,7 @@ function AjaxUtil() {
 
     this.makeFormData = function (parentSelector, replaceRule, useRESTful) {
 
-        var formData = undefined;
-        if (useRESTful == this.USE_RESTFUL) {
-            formData = isArray ? [] : {};
-        }
-        else {
-            formData = new FormData();
-        }
+        var formData = new FormData();
         
         var that = this;
         var form = $(parentSelector);
@@ -79,20 +73,80 @@ function AjaxUtil() {
 
     this.send = function (url, method, formData, fnCallback, useRESTful) {
 
+        function merge(obj1, obj2) {
+            if (obj1) {
+                var obj = obj1;
+                for (var x in obj2) {
+                    if (obj2.hasOwnProperty(x)) {
+                        if (Array.isArray(obj[x])) {
+                            for (var i in obj2[x]) {
+                                obj[x].push(obj2[x][i])
+                            }
+                        }
+                        else if (typeof(obj2[x]) == "object") {
+                            merge(obj[x], obj2[x]);
+                        }
+                        else {
+                            obj[x] = obj2[x];
+                        }
+                        
+                    }
+                }
+                return obj;
+            }
+        }
+
+        function makeObj(nameArr, index, value, obj) {
+            if (index < 0) {
+                return {...obj};
+            }
+            var key = nameArr[index];
+            var isArray = key.includes("[");
+            if (isArray) {
+                key = key.substr(0, key.lastIndexOf("["));
+            }
+            var newObj = {};
+            if (value != undefined) {
+                if (!isArray) {
+                    newObj[key] = value;
+                }
+                else {
+                    newObj.push(value);
+                }
+            }
+            else {
+                if (!isArray) {
+                    newObj[key] = {...obj};
+                }
+                else {
+                    newObj[key] = [{...obj}];
+                }
+            }
+            return makeObj(nameArr, index-1, undefined, newObj);
+        }
+
         function formDataToJson() {
-            var object = {};
+            let object = [];
+
             formData.forEach((value, key) => {
-                // Reflect.has in favor of: object.hasOwnProperty(key)
-                if(!Reflect.has(object, key)){
-                    object[key] = value;
-                    return;
-                }
-                if(!Array.isArray(object[key])){
-                    object[key] = [object[key]];    
-                }
-                object[key].push(value);
+                let arr = key.split(".");
+                object.push(makeObj(arr, arr.length - 1, value))
             });
-            return JSON.stringify(object);
+
+            if (object.length == 0) {
+                return {};
+            }
+            else if (object.length == 1) {
+                console.log(object[0])
+                return object[0];
+            }
+            else {
+                var data = merge(object[0], object[1]);
+                for (var i = 2; i < object.length; i++) {
+                    data = merge(data, object[i]);
+                }
+                return data;
+            }
         }
 
         var ajaxOption = {
@@ -111,6 +165,8 @@ function AjaxUtil() {
         if (useRESTful === true) {
             ajaxOption.contentType = "application/json";
         }
+
+        console.log(ajaxOption);
         $.ajax(ajaxOption);
     }
 
@@ -133,9 +189,6 @@ AjaxUtil.prototype.restPost = function(formSelector, url, fnCallback, replaceRul
     var formData = this.makeFormData(formSelector, replaceRule, this.USE_RESTFUL);
 	this.send(url, "POST", formData, fnCallback, this.USE_RESTFUL);
 }
-
-
-
 
 AjaxUtil.prototype.delete = function(url, fnCallback) {
 	this.send(url, "DELTE", undefined, fnCallback, this.USE_FORM);
