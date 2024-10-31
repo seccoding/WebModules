@@ -15,50 +15,56 @@
       window.onload = function () {
         /*
         carousel(".carousel", {
-          rolling: "continuos", // start-end, repeat, continuos
-          autoStart: { start: true, interval: 3000 },
+          rolling: {
+              type: "continuos", // start-end, repeat, continuos
+              speed: 1, // rolling speed (seconds)
+          },
+          autoStart: { 
+              start: true, 
+              interval: 6, // rolling interval (seconds)
+          },
           showDots: true,
           showArrows: true,
         })
          */
         carousel(".carousel-1");
-        carousel(".carousel-2");
+        //carousel(".carousel-2");
       };
     </script>
   </head>
   <body>
-    <ul class="carousel carousel-1" style="height: 500px">
-      <li data-index="0">
+    <ul class="carousel-1" style="height: 500px">
+      <li>
         <img src="images" />
       </li>
-      <li data-index="1">
+      <li>
         <img src="images" />
       </li>
-      <li data-index="2">
+      <li>
         <img src="images" />
       </li>
-      <li data-index="3">
+      <li>
         <img src="images" />
       </li>
-      <li data-index="4">
+      <li>
         <img src="images" />
       </li>
     </ul>
 
-    <ul class="carousel carousel-2" style="height: 500px">
-      <li data-index="0">
+    <ul class="carousel-2" style="height: 500px">
+      <li>
         <img src="images" />
       </li>
-      <li data-index="1">
+      <li>
         <img src="images" />
       </li>
-      <li data-index="2">
+      <li>
         <img src="images" />
       </li>
-      <li data-index="3">
+      <li>
         <img src="images" />
       </li>
-      <li data-index="4">
+      <li>
         <img src="images" />
       </li>
     </ul>

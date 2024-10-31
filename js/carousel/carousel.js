@@ -6,7 +6,7 @@ function carousel(element, option = {}) {
     let autoStart = {};
 
     for (const each of carouselElement) {
-      const wrapDiv = wrapCarousel(each);
+      const wrapDiv = wrapCarousel(each, option.rolling.speed);
       wrapDiv.dataset.id = Math.random();
 
       clearUlStyle(each);
@@ -48,8 +48,14 @@ function carousel(element, option = {}) {
 
   function getCompletedDefaultOption(option) {
     var defaultOption = {
-      rolling: "continuos", // start-end, repeat, continuos
-      autoStart: { start: true, interval: 3000 },
+      rolling: {
+        type: "continuos", // start-end, repeat, continuos
+        speed: 1, // rolling speed (seconds)
+      },
+      autoStart: {
+        start: true,
+        interval: 6, // rolling interval (seconds)
+      },
       showDots: true,
       showArrows: true,
     };
@@ -60,12 +66,19 @@ function carousel(element, option = {}) {
         ...option.autoStart,
       };
     }
+    if (option.rolling) {
+      option.rolling = {
+        ...defaultOption.rolling,
+        ...option.rolling,
+      };
+    }
     return { ...defaultOption, ...option };
   }
 
-  function wrapCarousel(each) {
+  function wrapCarousel(each, speed) {
     var eachParent = each.parentElement;
-
+    each.style.transition = `left ${speed}s`;
+    each.setAttribute("class", "carousel");
     var wrapDiv = document.createElement("div");
     wrapDiv.setAttribute("class", "carousel-wrapper");
     wrapDiv.dataset.index = 0;
@@ -121,11 +134,11 @@ function carousel(element, option = {}) {
         let index = item.parentElement.dataset.index;
         index--;
 
-        if (index < 0 && rolling === "start-end") {
+        if (index < 0 && rolling.type === "start-end") {
           index = 0;
-        } else if (index < 0 && rolling === "repeat") {
+        } else if (index < 0 && rolling.type === "repeat") {
           index = item.children.length - 1;
-        } else if (index < 0 && rolling === "continuos") {
+        } else if (index < 0 && rolling.type === "continuos") {
           const childrenLength = item.children.length;
           let clonedItems = [];
           for (let i = 0; i < childrenLength; i++) {
@@ -142,7 +155,8 @@ function carousel(element, option = {}) {
             clonedItemLength--;
             if (clonedItemLength < 0) {
               item.style.transition = transition;
-              index = item.children.length / 2 - 1;
+              //index = item.children.length / 2 - 1;
+              index = clonedItems.length - 1;
 
               item.style.left = -carouselContainerWidth * index + "px";
               item.parentElement.dataset.index = index;
@@ -151,10 +165,15 @@ function carousel(element, option = {}) {
               setTimeout(function removeOldItems() {
                 item.children[item.children.length - 1].remove();
 
-                if (clonedItems.length < item.children.length) {
-                  setTimeout(removeOldItems, 100);
+                if (clonedItems.length < item.children.length - 1) {
+                  setTimeout(removeOldItems, 10);
+                } else {
+                  console.log("Last One");
+                  setTimeout(function () {
+                    item.children[item.children.length - 1].remove();
+                  }, rolling.speed * 1000);
                 }
-              }, 100);
+              }, 10);
 
               clearInterval(cloneInterval);
               return;
@@ -184,13 +203,16 @@ function carousel(element, option = {}) {
         let index = item.parentElement.dataset.index;
         index++;
 
-        if (index > item.children.length - 1 && rolling === "start-end") {
+        if (index > item.children.length - 1 && rolling.type === "start-end") {
           index = item.children.length - 1;
-        } else if (index > item.children.length - 1 && rolling === "repeat") {
+        } else if (
+          index > item.children.length - 1 &&
+          rolling.type === "repeat"
+        ) {
           index = 0;
         } else if (
           index > item.children.length - 1 &&
-          rolling === "continuos"
+          rolling.type === "continuos"
         ) {
           const childrenLength = item.children.length;
           let clonedItems = [];
@@ -230,7 +252,7 @@ function carousel(element, option = {}) {
                       setTimeout(function () {
                         item.style.transition = transition;
                       }, 100);
-                    }, 1000);
+                    }, rolling.speed * 1000);
                   }, 300);
                 } else if (clonedItems.length < item.children.length) {
                   item.children[0].remove();
@@ -295,7 +317,8 @@ function carousel(element, option = {}) {
     for (const eachDot of dots.children) {
       eachDot.setAttribute("class", "");
     }
-    if (index >= 0) {
+
+    if (index >= 0 && index < dots.children.length) {
       dots
         .querySelector(`li[data-index="${index}"]`)
         .setAttribute("class", "active");
@@ -308,7 +331,7 @@ function carousel(element, option = {}) {
 
       autoStart[wrapDiv.dataset.id] = setTimeout(function () {
         showNextImage();
-      }, option.autoStart.interval);
-    }, option.autoStart.interval);
+      }, option.autoStart.interval * 1000);
+    }, option.autoStart.interval * 1000);
   }
 }

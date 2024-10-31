@@ -54,7 +54,6 @@
   display: flex;
   position: relative;
   left: 0;
-  transition: left 1s;
 }
 
 .carousel > * {
