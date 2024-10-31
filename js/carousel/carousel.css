@@ -1,0 +1,67 @@
+.carousel-wrapper {
+  overflow: hidden;
+  position: relative;
+}
+
+.carousel-wrapper > .left-arrow {
+  position: absolute;
+  display: flex;
+  align-items: center;
+  top: 0;
+  left: 0;
+  height: 100%;
+  padding: 2rem;
+  background-color: #fff5;
+}
+.carousel-wrapper > .left-arrow::after {
+  content: "<<<";
+}
+.carousel-wrapper > .right-arrow {
+  content: ">>>";
+  position: absolute;
+  display: flex;
+  align-items: center;
+  top: 0;
+  right: 0;
+  height: 100%;
+  padding: 2rem;
+  background-color: #fff5;
+}
+.carousel-wrapper > .right-arrow::after {
+  content: ">>>";
+}
+
+.carousel-dots {
+  margin: 0;
+  padding: 0;
+  justify-content: center;
+  display: flex;
+  list-style-type: none;
+}
+
+.carousel-dots > li {
+  padding: 0.3rem;
+}
+
+.carousel-dots > li::after {
+  content: "◦";
+}
+.carousel-dots > li.active::after {
+  content: "●";
+}
+
+.carousel {
+  display: flex;
+  position: relative;
+  left: 0;
+  transition: left 1s;
+}
+
+.carousel > * {
+  flex-basis: 100%;
+  flex-shrink: 0;
+
+  background-repeat: no-repeat;
+  background-position: 0, 0;
+  background-size: cover;
+}
