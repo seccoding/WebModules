@@ -168,7 +168,6 @@ function carousel(element, option = {}) {
                 if (clonedItems.length < item.children.length - 1) {
                   setTimeout(removeOldItems, 10);
                 } else {
-                  console.log("Last One");
                   setTimeout(function () {
                     item.children[item.children.length - 1].remove();
                   }, rolling.speed * 1000);
