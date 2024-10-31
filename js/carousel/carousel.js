@@ -48,8 +48,8 @@ function carousel(element, option = {}) {
 
   function getCompletedDefaultOption(option) {
     var defaultOption = {
-      rolling: "repeat", // start-end, repeat
-      autoStart: { start: true, interval: 5000 },
+      rolling: "continuos", // start-end, repeat, continuos
+      autoStart: { start: true, interval: 3000 },
       showDots: true,
       showArrows: true,
     };
@@ -125,11 +125,56 @@ function carousel(element, option = {}) {
           index = 0;
         } else if (index < 0 && rolling === "repeat") {
           index = item.children.length - 1;
+        } else if (index < 0 && rolling === "continuos") {
+          const childrenLength = item.children.length;
+          let clonedItems = [];
+          for (let i = 0; i < childrenLength; i++) {
+            clonedItems.push(item.children[i].cloneNode(true));
+          }
+
+          const styled = getComputedStyle(item);
+          const transition = styled.getPropertyValue("transition");
+
+          item.style.transition = "none";
+          var clonedItemLength = clonedItems.length;
+
+          var cloneInterval = setInterval(function () {
+            clonedItemLength--;
+            if (clonedItemLength < 0) {
+              item.style.transition = transition;
+              index = item.children.length / 2 - 1;
+
+              item.style.left = -carouselContainerWidth * index + "px";
+              item.parentElement.dataset.index = index;
+              activeDot(item.parentElement.nextSibling, index);
+
+              setTimeout(function removeOldItems() {
+                item.children[item.children.length - 1].remove();
+
+                if (clonedItems.length < item.children.length) {
+                  setTimeout(removeOldItems, 100);
+                }
+              }, 100);
+
+              clearInterval(cloneInterval);
+              return;
+            }
+
+            item.prepend(clonedItems[clonedItemLength]);
+
+            var left = item.style.left.replace("px", "");
+            item.style.left = left - carouselContainerWidth + "px";
+          }, 15);
+
+          item.style.left = clonedItems.length * -carouselContainerWidth;
+          index = item.children.length - clonedItems.length - 1;
         }
 
-        item.style.left = -carouselContainerWidth * index + "px";
-        item.parentElement.dataset.index = index;
-        activeDot(item.parentElement.nextSibling, index);
+        if (index >= 0) {
+          item.style.left = -carouselContainerWidth * index + "px";
+          item.parentElement.dataset.index = index;
+          activeDot(item.parentElement.nextSibling, index);
+        }
       });
     } else if (behavior === "to-right") {
       arrow.addEventListener("click", function () {
@@ -143,11 +188,69 @@ function carousel(element, option = {}) {
           index = item.children.length - 1;
         } else if (index > item.children.length - 1 && rolling === "repeat") {
           index = 0;
+        } else if (
+          index > item.children.length - 1 &&
+          rolling === "continuos"
+        ) {
+          const childrenLength = item.children.length;
+          let clonedItems = [];
+          for (let i = 0; i < childrenLength; i++) {
+            clonedItems.push(item.children[i].cloneNode(true));
+          }
+
+          const styled = getComputedStyle(item);
+          const transition = styled.getPropertyValue("transition");
+
+          item.style.transition = "none";
+          var clonedItemLength = -1;
+
+          var cloneInterval = setInterval(function () {
+            clonedItemLength++;
+
+            if (clonedItemLength == clonedItems.length) {
+              setTimeout(function removeOldItems() {
+                const left = parseInt(item.style.left.replace("px", ""));
+                item.style.left = left + carouselContainerWidth + "px";
+
+                if (clonedItems.length === item.children.length - 1) {
+                  item.style.left = 0 + "px";
+
+                  setTimeout(function () {
+                    item.style.transition = transition;
+                    item.style.left = -carouselContainerWidth + "px";
+
+                    index = 0;
+                    item.parentElement.dataset.index = index;
+                    activeDot(item.parentElement.nextSibling, index);
+
+                    setTimeout(function () {
+                      item.children[0].remove();
+                      item.style.transition = "none";
+                      item.style.left = 0;
+                      setTimeout(function () {
+                        item.style.transition = transition;
+                      }, 100);
+                    }, 1000);
+                  }, 300);
+                } else if (clonedItems.length < item.children.length) {
+                  item.children[0].remove();
+                  setTimeout(removeOldItems, 100);
+                }
+              }, 100);
+
+              clearInterval(cloneInterval);
+              return;
+            }
+
+            item.append(clonedItems[clonedItemLength]);
+          }, 15);
         }
 
-        item.style.left = -carouselContainerWidth * index + "px";
-        item.parentElement.dataset.index = index;
-        activeDot(item.parentElement.nextSibling, index);
+        if (index < item.children.length) {
+          item.style.left = -carouselContainerWidth * index + "px";
+          item.parentElement.dataset.index = index;
+          activeDot(item.parentElement.nextSibling, index);
+        }
       });
     }
   }
@@ -192,10 +295,11 @@ function carousel(element, option = {}) {
     for (const eachDot of dots.children) {
       eachDot.setAttribute("class", "");
     }
-
-    dots
-      .querySelector(`li[data-index="${index}"]`)
-      .setAttribute("class", "active");
+    if (index >= 0) {
+      dots
+        .querySelector(`li[data-index="${index}"]`)
+        .setAttribute("class", "active");
+    }
   }
 
   function startCarousel(autoStart, wrapDiv, arrows) {
