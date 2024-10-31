@@ -78,7 +78,7 @@ function carousel(element, option = {}) {
   function wrapCarousel(each, speed) {
     var eachParent = each.parentElement;
     each.style.transition = `left ${speed}s`;
-    each.setAttribute("class", "carousel");
+    each.setAttribute("class", `carousel ${each.getAttribute("class")}`);
     var wrapDiv = document.createElement("div");
     wrapDiv.setAttribute("class", "carousel-wrapper");
     wrapDiv.dataset.index = 0;
