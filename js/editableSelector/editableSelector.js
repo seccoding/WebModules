@@ -49,12 +49,13 @@ function refreshSelector(select) {
     `.editable-select-div[data-target="${select.className}"]`
   );
 
+  select.style.display = "inline-block";
   setStyle(
     editableDiv,
     "min-width",
     "calc(" + (select.offsetWidth || select.width) + "px + 2rem)"
   );
-
+  select.style.display = "none";
   const options = getAll(select, "option");
   editableDiv.innerText = options[0].innerText;
   select.value = options[0].value;
