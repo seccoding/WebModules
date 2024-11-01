@@ -31,7 +31,7 @@ function fileSelector(selector) {
     fileDiv.append(appendedFiles);
 
     file.addEventListener("change", function () {
-      const prevFileList = document.querySelector("ul.file-list");
+      const prevFileList = fileDiv.querySelector("ul.file-list");
       if (prevFileList) {
         prevFileList.remove();
       }
