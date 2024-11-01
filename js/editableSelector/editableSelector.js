@@ -26,6 +26,40 @@ document.addEventListener("click", function (e) {
   }
 });
 
+function refreshSelector(select) {
+  function get(dom = document, selector) {
+    return dom.querySelector(selector);
+  }
+
+  function getAll(dom = document, selector) {
+    return dom.querySelectorAll(selector);
+  }
+
+  function setStyle(dom, property, propertyValue) {
+    dom.style[property] = propertyValue;
+  }
+
+  const itemList = get(
+    document,
+    `.editable-select-option-div[data-target="${select.className}"]`
+  );
+
+  const editableDiv = get(
+    document,
+    `.editable-select-div[data-target="${select.className}"]`
+  );
+
+  setStyle(
+    editableDiv,
+    "min-width",
+    "calc(" + (select.offsetWidth || select.width) + "px + 2rem)"
+  );
+
+  const options = getAll(select, "option");
+  editableDiv.innerText = options[0].innerText;
+  select.value = options[0].value;
+}
+
 function editableSelector(element) {
   if (!element) {
     return;
@@ -66,7 +100,7 @@ function editableSelector(element) {
     setStyle(
       inputDiv,
       "min-width",
-      "calc(" + select.offsetWidth + "px + 2rem)"
+      "calc(" + (select.offsetWidth || select.width) + "px + 2rem)"
     );
 
     const options = getAll(select, "option");
