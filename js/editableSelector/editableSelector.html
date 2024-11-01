@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <style type="text/css">
+      * {
+        box-sizing: border-box;
+      }
+    </style>
+    <link rel="stylesheet" type="text/css" href="./editableSelector.css" />
+    <script src="./editableSelector.js"></script>
+    <script type="text/javascript">
+      window.onload = function () {
+        editableSelector(".editable1");
+        editableSelector(".editable2");
+        editableSelector(".editable3");
+
+        document
+          .querySelector("#check-value")
+          .addEventListener("click", function () {
+            console.log(document.querySelector(".editable1").value);
+            console.log(document.querySelector(".editable2").value);
+            console.log(document.querySelector(".editable3").value);
+          });
+      };
+    </script>
+  </head>
+  <body>
+    <select class="editable1">
+      <option value="1">1Ongsfdgsdfgfsdgfdde</option>
+      <option value="2">2Two</option>
+      <option value="3">3Three</option>
+      <option value="4">4Four</option>
+      <option value="5">5Five</option>
+    </select>
+
+    <select class="editable2">
+      <option value="1">One</option>
+      <option value="2">Two</option>
+      <option value="3">Three</option>
+      <option value="4">Four</option>
+      <option value="5">Five</option>
+    </select>
+
+    <select class="editable3">
+      <option value="1">6One</option>
+      <option value="2">7Two</option>
+      <option value="3">8Three</option>
+      <option value="4">9Four</option>
+      <option value="5">10Five</option>
+    </select>
+
+    <button id="check-value">전송</button>
+  </body>
+</html>
