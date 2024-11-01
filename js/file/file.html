@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <style type="text/css">
+      * {
+        box-sizing: border-box;
+      }
+    </style>
+    <link rel="stylesheet" type="text/css" href="./file.css" />
+    <script src="./file.js"></script>
+    <script type="text/javascript">
+      window.onload = function () {
+        fileSelector(".file1");
+        fileSelector(".file2");
+        fileSelector(".file3");
+      };
+    </script>
+  </head>
+  <body>
+    <input type="file" class="file1" />
+    <input type="file" class="file2" multiple />
+    <input type="file" class="file3" />
+  </body>
+</html>
